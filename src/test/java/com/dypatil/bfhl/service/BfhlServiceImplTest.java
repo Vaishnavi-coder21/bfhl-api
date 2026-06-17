@@ -42,17 +42,26 @@ public class BfhlServiceImplTest {
 
     @Test
     public void testProcessRequest_AlphanumericExtraction() {
+        // Input: ["A1B2", "100", "#", "Test123", "Z", "55"]
+        // Per spec: numbers INSIDE alphanumeric strings (1,2 from A1B2 and 1,2,3 from Test123)
+        // are NOT counted as numbers. Only pure numeric strings (100, 55) are counted.
         BfhlRequest request = new BfhlRequest(Arrays.asList("A1B2", "100", "#", "Test123", "Z", "55"));
         BfhlResponse response = bfhlService.processRequest(request, "REQ-1002");
 
         assertTrue(response.isSuccess());
-        assertEquals(Arrays.asList("1", "55", "123"), response.getOddNumbers());
-        assertEquals(Arrays.asList("2", "100"), response.getEvenNumbers());
+        // 55 is odd, 100 is even — embedded numbers from alphanumeric NOT included
+        assertEquals(Arrays.asList("55"), response.getOddNumbers());
+        assertEquals(Arrays.asList("100"), response.getEvenNumbers());
+        // Alphabets: A,B from A1B2 (individual chars) + T,E,S,T from Test123 + Z
         assertEquals(Arrays.asList("A", "B", "T", "E", "S", "T", "Z"), response.getAlphabets());
         assertEquals(Arrays.asList("#"), response.getSpecialCharacters());
-        assertEquals("281", response.getSum());
-        assertEquals("123", response.getLargestNumber());
-        assertEquals("1", response.getSmallestNumber());
+        // sum = 100 + 55 = 155 (not 281)
+        assertEquals("155", response.getSum());
+        assertEquals("100", response.getLargestNumber());
+        assertEquals("55", response.getSmallestNumber());
+        assertEquals(7, response.getAlphabetCount());
+        assertEquals(2, response.getNumberCount());
+        assertEquals(1, response.getSpecialCharacterCount());
     }
 
     @Test

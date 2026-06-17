@@ -168,14 +168,8 @@ public class BfhlServiceImpl implements BfhlService {
             } else if (isAlphabetic(element)) {
                 alphabets.add(element.toUpperCase());
             } else if (isAlphanumeric(element)) {
-                // Extract numbers
-                List<String> nums = extractNumbers(element);
-                for (String n : nums) {
-                    BigDecimal num = new BigDecimal(n);
-                    allNumbers.add(num);
-                    categorizeOddEven(num, oddNumbers, evenNumbers);
-                }
-                // Extract alphabets
+                // Per spec: for alphanumeric strings, extract alphabets ONLY.
+                // Numbers embedded in alphanumeric strings are NOT processed as numeric values.
                 List<String> alphas = extractAlphabets(element);
                 alphabets.addAll(alphas);
             } else {
